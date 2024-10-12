@@ -1,0 +1,14 @@
+#include "ros/ros.h"
+ 
+int main(int argc,char *argv[])
+{
+    // ros node initialize
+    ros::init(argc,argv,"Hello World");
+    //create Node Handler
+    ros::NodeHandle n;
+    //Output，hello world
+    ROS_INFO("hello world");
+ 
+    return 0;
+ 
+}
