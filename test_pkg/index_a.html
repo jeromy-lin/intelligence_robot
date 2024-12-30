@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TurtleSim Control</title>
+  <script src="js/roslib.min.js"></script>
+</head>
+<body>
+  <h1>TurtleSim Control Panel</h1>
+  
+  <div>
+    <h3>Send Velocity Command</h3>
+    <label for="linear">Linear Velocity:</label>
+    <input type="number" id="linear" step="0.1" value="1.0">
+    <br>
+    <label for="angular">Angular Velocity:</label>
+    <input type="number" id="angular" step="0.1" value="0.0">
+    <br>
+    <button id="sendCmd">Send Command</button>
+  </div>
+  
+  <div>
+    <h3>Turtle Position</h3>
+    <p id="position">Waiting for position updates...</p>
+  </div>
+
+  <script>
+    // Connect to ROS Bridge
+    const ros = new ROSLIB.Ros({
+      url: 'ws://localhost:8000'
+    });
+
+    ros.on('connection', () => {
+      console.log('Connected to ROS Bridge');
+    });
+
+    ros.on('error', (error) => {
+      console.error('Connection error:', error);
+    });
+
+    ros.on('close', () => {
+      console.log('Connection closed');
+    });
+
+    // Publisher for velocity commands
+    const cmdVelTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/turtle1/cmd_vel',
+      messageType: 'geometry_msgs/Twist'
+    });
+
+    document.getElementById('sendCmd').addEventListener('click', () => {
+      const linear = parseFloat(document.getElementById('linear').value);
+      const angular = parseFloat(document.getElementById('angular').value);
+
+      const twist = new ROSLIB.Message({
+        linear: { x: linear, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: angular }
+      });
+
+      cmdVelTopic.publish(twist);
+      console.log('Published velocity command:', twist);
+    });
+
+    // Subscriber for turtle position
+    const poseTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/turtle1/pose',
+      messageType: 'turtlesim/Pose'
+    });
+
+    poseTopic.subscribe((message) => {
+      const position = `x: ${message.x.toFixed(2)}, y: ${message.y.toFixed(2)}, theta: ${message.theta.toFixed(2)}`;
+      document.getElementById('position').textContent = position;
+      console.log('Received position:', message);
+    });
+  </script>
+</body>
+</html>
+
