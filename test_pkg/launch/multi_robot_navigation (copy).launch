@@ -1,0 +1,51 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <!-- Turtlebot1 -->
+  <group ns="turtlebot1">
+    <param name="tf_prefix" value="turtlebot1"/>
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+      <arg name="model" value="$(arg model)" />
+    </include>
+    <node name="map_server" pkg="map_server" type="map_server"
+          args="$(find test_pkg)/map/my_map.yaml" output="screen" />
+    <include file="$(find test_pkg)/launch/multi_amcl.launch">
+      <arg name="tf_prefix" value="turtlebot1"/>
+    </include>
+    <include file="$(find test_pkg)/launch/multi_move_base.launch">
+      <arg name="tf_prefix" value="turtlebot1"/>
+      <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    </include>
+  </group>
+
+  <!-- Turtlebot2 -->
+  <group ns="turtlebot2">
+    <param name="tf_prefix" value="turtlebot2"/>
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+      <arg name="model" value="$(arg model)" />
+    </include>
+    <node name="map_server" pkg="map_server" type="map_server"
+          args="$(find test_pkg)/map/my_map.yaml" output="screen" />
+    <include file="$(find test_pkg)/launch/multi_amcl.launch">
+      <arg name="tf_prefix" value="turtlebot2"/>
+    </include>
+    <include file="$(find test_pkg)/launch/multi_move_base.launch">
+      <arg name="tf_prefix" value="turtlebot2"/>
+      <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    </include>
+  </group>
+
+  <!-- Map server -->
+  <node name="map_server" pkg="map_server" type="map_server" 
+        args="$(find test_pkg)/map/my_map.yaml" output="screen" />
+
+  <!-- RViz -->
+  <group if="$(arg open_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+  </group>
+</launch>
+

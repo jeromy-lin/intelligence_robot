@@ -1,0 +1,23 @@
+<launch>
+    <!-- Turn on turtlesim node -->
+    <node name="sim" pkg="turtlesim" type="turtlesim_node" output="screen" />
+    <node name="sim_key" pkg="turtlesim" type="turtle_teleop_key" output="screen" />
+    
+    <!-- Spawn turtle2 -->
+    <node name="turtle_spawner" pkg="test_pkg" type="turtle_spawn" output="screen" />
+
+    <!-- Broadcast with turtle1 TF -->
+    <node name="turtle_tf_broadcaster_1" pkg="test_pkg" type="turtle_tf_broadcaster" output="screen">
+        <param name="~turtle" value="turtle1" />
+    </node>
+
+    <!-- Broadcast with turtle2 TF -->
+    <node name="turtle_tf_broadcaster_2" pkg="test_pkg" type="turtle_tf_broadcaster" output="screen">
+        <param name="~turtle" value="turtle2" />
+    </node>
+
+    <!-- Reveive TF and Execution the follower control -->
+    <node name="turtle_tf_listener" pkg="test_pkg" type="turtle_tf_listener" output="screen" />
+</launch>
+
+

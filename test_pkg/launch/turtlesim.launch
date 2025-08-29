@@ -1,0 +1,24 @@
+<launch>
+	<group ns="turtlesim1">
+	       <node pkg="turtlesim" name="sim1" type="turtlesim_node" output="screen"/>
+	       <param name="turtlesim_node/initial_pose_x" value="1.0" />
+	       <param name="turtlesim_node/initial_pose_y" value="1.0" />
+	       <param name="turtlesim_node/initial_pose_theta" value="0.0" />
+	       
+	       <param name="background_r" value="255" />
+	       <param name="background_g" value="0.0" />
+	       <param name="background_b" value="0.0" />
+	       
+	</group>
+	<group ns="turtlesim2">
+	       <node pkg="turtlesim" name="sim2" type="turtlesim_node" output="screen"/>
+	       <param name="turtlesim_node/initial_pose_x" value="1.0" />
+	       <param name="turtlesim_node/initial_pose_y" value="1.0" />
+	       <param name="turtlesim_node/initial_pose_theta" value="0.0" />
+	       
+	       <param name="background_r" value="0.0" />
+	       <param name="background_g" value="255" />
+	       <param name="background_b" value="0.0" />
+	       	       
+	</group>
+</launch>

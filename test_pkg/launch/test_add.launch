@@ -1,0 +1,9 @@
+<launch>
+
+  <node name="add_two_ints_service" pkg="test_pkg" type="add_two_ints_server"   output="screen"/>
+
+  <node name="add_two_ints_client" pkg="test_pkg" args="1 2" type="add_two_ints_client" output="screen"/>
+
+
+
+</launch>

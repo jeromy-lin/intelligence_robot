@@ -1,0 +1,22 @@
+<launch>
+    <!-- Step1. Start up Gazebo turtlebot3_world -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch" />
+
+    <!-- Step2. Start up map server and idenity with my_map.yaml -->
+    <node name="map_server" pkg="map_server" type="map_server" 
+          args="$(find test_pkg)/map/my_map.yaml" output="screen" />
+
+    <!-- Step3. Running with wall_follower node -->
+    <node name="wall_follower" pkg="test_pkg" type="wall_follower" output="screen" />
+
+    <!-- Step4. Start with robot_state_publisher -->
+    <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_waffle.urdf.xacro" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+
+    <!-- Step5. TF (map -> odom) -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 map odom" />
+
+    <!-- Step6. Call Rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot3_description)/rviz/model.rviz" required="true" />
+</launch>
+

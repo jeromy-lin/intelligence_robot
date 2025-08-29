@@ -1,0 +1,100 @@
+<launch>
+  <!-- This version without problem and could run as two robots -->	
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <arg name="first_tb3"  default="robot_0"/>
+  <arg name="second_tb3" default="robot_1"/>
+
+  <arg name="first_x_pos" default=" 0.5"/>
+  <arg name="first_y_pos" default=" -1.8"/>
+  <arg name="first_z_pos" default=" 0.0"/>
+  <arg name="first_yaw"   default=" 0.0"/>
+  <arg name="first_robot" value="$(arg first_tb3)"/>
+
+  <arg name="second_x_pos" value=" 0.5"/>
+  <arg name="second_y_pos" value=" 1.8"/>
+  <arg name="second_z_pos" value=" 0.0"/>
+  <arg name="second_yaw"   value=" 0.0"/>
+  <arg name="second_robot" value="$(arg second_tb3)"/>  
+ 
+  <!-- Robot Model -->
+  <arg name="model" default="$(optenv TURTLEBOT3_MODEL burger)" doc="model type [burger, waffle, waffle_pi]"/>
+
+  <!-- World Model -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_world.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>     
+  
+  <!-- Robot 0 -->
+  <group ns="$(arg first_tb3)">  
+    <param name="tf_prefix" value="$(arg first_tb3)"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+    </node>
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model $(arg first_tb3) -x $(arg first_x_pos) -y $(arg first_y_pos) -z $(arg first_z_pos) -Y $(arg first_yaw) -param robot_description" />               
+  </group>     
+  
+  <!-- Robot 1 -->
+  <group ns="$(arg second_tb3)">  
+    <param name="tf_prefix" value="$(arg second_tb3)"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+    </node>
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model $(arg second_tb3) -x $(arg second_x_pos) -y $(arg second_y_pos) -z $(arg second_z_pos) -Y $(arg second_yaw) -param robot_description" />               
+  </group>     
+  
+ <!-- Map server -->
+   <!-- CJ Marked-->
+   <!-- arg name="map_file" default="$(find turtlebot3_navigation)/maps/map.yaml"/ -->
+   <!-- node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" --> 
+   
+     
+ 
+  <!-- node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/ -->
+  <node name="map_server" pkg="map_server" type="map_server" 
+        args="$(find test_pkg)/map/my_map.yaml" output="screen" />
+
+
+  <!-- arg name="map_file" default="$(find turtlebot3_navigation)/maps/map.yaml"/ -->
+  <arg name="map_file" default="$(find test_pkg)/maps/my_map.yaml"/>
+   
+   
+   
+ <!-- AMCL -->
+    <!-- CJ Marked-->
+    <!-- include file="/home/ubros/catkin_ws/launch/amcl.launch" -->
+  
+    
+    <include file="$(find test_pkg)/launch/multi_amcl.launch">
+	 <arg name="initial_pose_x" value="$(arg first_x_pos)"/>
+	 <arg name="initial_pose_y" value="$(arg first_y_pos)"/>
+	 <arg name="initial_pose_a" value="$(arg first_yaw)"/>    
+	 <arg name="robot_name"     value="$(arg first_tb3)"/>
+    </include>
+    
+    
+    
+    <!-- AMCL -->
+    <!-- CJ Marked-->
+    <!-- include file="/home/ubros/catkin_ws/launch/amcl.launch" -->
+    <include file="$(find test_pkg)/launch/multi_amcl.launch">
+	 <arg name="initial_pose_x" value="$(arg second_x_pos)"/>
+	 <arg name="initial_pose_y" value="$(arg second_y_pos)"/>
+	 <arg name="initial_pose_a" value="$(arg second_yaw)"/>    
+	 <arg name="robot_name"     value="$(arg second_tb3)"/>
+    </include>                   
+
+
+
+</launch>
+
+
+
